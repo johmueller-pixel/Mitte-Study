@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Village</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Exo+2:wght@300;400;600;700;900&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #F5C842;
+      --gold-dark: #C9922A;
+      --gold-light: #FFE083;
+      --emerald: #2ECC71;
+      --emerald-dark: #1A7A43;
+      --sky: #5DADE2;
+      --sky-dark: #2E86C1;
+      --dark-bg: #0D1117;
+      --dark-panel: #161B22;
+      --dark-card: #1C2433;
+      --dark-border: #2D3748;
+      --text-primary: #E8EAED;
+      --text-secondary: #9AA0A6;
+      --danger: #E74C3C;
+      --sidebar-w: 220px;
+      --teal: #1ABC9C;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-primary);
+      display: flex;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    #loginModal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13,17,23,0.95);
+      z-index: 100;
+    }
+
+    .login-card {
+      width: min(520px, 92vw);
+      background: var(--dark-panel);
+      border: 1px solid var(--dark-border);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.35);
+    }
+
+    .auth-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: var(--gold);
+    }
+
+    .auth-subtitle {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+
+    .auth-switch {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 22px;
+      border: 1px solid var(--dark-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 12px 0;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+
+    .auth-tab.active {
+      background: var(--gold);
+      color: #000;
+    }
+
+    .auth-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-group { display: grid; gap: 6px; }
+    .form-label { color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .form-input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--dark-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--gold); }
+
+    .auth-actions {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .auth-button {
+      flex: 1;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: #000;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .auth-button:hover { transform: translateY(-1px); }
+
+    .auth-message { color: var(--text-secondary); font-size: 13px; min-height: 20px; }
+
+    #app { display: flex; width: 100%; height: 100%; }
+
+    #sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--dark-panel);
+      border-right: 1px solid var(--dark-border);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .sidebar-logo {
+      padding: 22px 18px 14px;
+      border-bottom: 1px solid var(--dark-border);
+      text-align: center;
+    }
+    .sidebar-logo .logo-text {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 14px;
+      color: var(--gold);
+      letter-spacing: 2px;
+      line-height: 1.2;
+    }
+    .sidebar-logo .logo-sub {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .nav-item:hover { background: rgba(245,200,66,0.08); color: var(--text-primary); }
+    .nav-item.active {
+      background: rgba(245,200,66,0.12);
+      border-left-color: var(--gold);
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .nav-icon { width: 18px; text-align: center; font-size: 14px; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 18px;
+      border-top: 1px solid var(--dark-border);
+    }
+    .user-pill { display: flex; align-items: center; gap: 10px; }
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #000;
+    }
+
+    #main {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--dark-bg);
+      padding: 28px;
+    }
+    #main::-webkit-scrollbar { width: 6px; }
+    #main::-webkit-scrollbar-thumb { background: var(--dark-border); border-radius: 3px; }
+
+    .page { display: none; animation: fadeIn 0.3s ease; }
+    .page.active { display: block; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .dash-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 24px; }
+    .dash-title { font-family: 'Cinzel Decorative', serif; font-size: 24px; color: var(--gold); }
+    .dash-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
+
+    .level-section,
+    .stat-card,
+    .stat-big-card,
+    .chart-card,
+    .course-card,
+    .friend-card,
+    .session-item {
+      background: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 16px;
+    }
+
+    .level-section { padding: 22px; margin-bottom: 22px; }
+    .level-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .level-name { font-size: 15px; font-weight: 700; }
+    .level-badge {
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: #000;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .level-detail { color: var(--text-secondary); margin-bottom: 14px; font-size: 13px; }
+    .progress-track { background: rgba(255,255,255,0.06); border-radius: 999px; height: 14px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); width: 0%; transition: width 0.6s ease; }
+    .progress-pct { text-align: right; margin-top: 8px; color: var(--text-secondary); font-size: 12px; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
+    .stat-card { padding: 18px; text-align: center; }
+    .stat-value { font-size: 28px; font-weight: 900; color: var(--gold); margin-bottom: 6px; }
+    .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+
+    .dash-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 22px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: #000;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .dash-btn:hover { transform: translateY(-1px); }
+
+    .page-title { font-family: 'Cinzel Decorative', serif; font-size: 18px; color: var(--gold); margin-bottom: 18px; }
+    .table-wrapper { background: var(--dark-card); border: 1px solid var(--dark-border); border-radius: 18px; overflow: hidden; }
+    .table-row { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 16px; padding: 16px 20px; align-items: center; border-bottom: 1px solid var(--dark-border); }
+    .table-row:last-child { border-bottom: none; }
+    .table-head { color: var(--text-secondary); text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+    .table-cell { color: var(--text-primary); font-size: 14px; }
+
+    .field-list { display: grid; gap: 16px; max-width: 400px; }
+    .label-quiet { color: var(--text-secondary); font-size: 13px; }
+    .value-strong { color: var(--gold); font-size: 16px; font-weight: 700; }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: #000;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 980px) {
+      body { flex-direction: column; }
+      #sidebar { width: 100%; min-width: unset; }
+      #main { padding: 18px; }
+      .dash-header { flex-direction: column; gap: 14px; }
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loginModal">
+    <div class="login-card">
+      <div class="auth-title">Study Village</div>
+      <div class="auth-subtitle">Verbinde dein HTML mit dem Backend. Login oder registriere dich, um loszulegen.</div>
+      <div class="auth-switch">
+        <button id="loginTab" class="auth-tab active" type="button" onclick="showAuth('login')">Login</button>
+        <button id="registerTab" class="auth-tab" type="button" onclick="showAuth('register')">Registrieren</button>
+      </div>
+      <form id="authForm" class="auth-form" onsubmit="submitAuth(event)">
+        <div id="nameField" class="form-group" style="display:none;">
+          <label class="form-label" for="authName">Name</label>
+          <input id="authName" class="form-input" type="text" placeholder="Dein Name" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="authEmail">E-Mail</label>
+          <input id="authEmail" class="form-input" type="email" placeholder="name@example.com" autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="authPassword">Passwort</label>
+          <input id="authPassword" class="form-input" type="password" placeholder="Passwort" autocomplete="current-password" required />
+        </div>
+        <div class="auth-actions">
+          <button class="auth-button" type="submit">Senden</button>
+        </div>
+        <div id="authMessage" class="auth-message"></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="app" style="display:none; width:100%; height:100%;">
+    <div id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-text">Study<br />Village</div>
+        <div class="logo-sub">Lern &amp; Aufsteigen</div>
+      </div>
+      <div style="padding: 10px 0;">
+        <div class="nav-item active" onclick="showPage('dashboard', this)">
+          <span class="nav-icon">&#9733;</span> Dashboard
+        </div>
+        <div class="nav-item" onclick="showPage('users', this)">
+          <span class="nav-icon">&#128101;</span> Community
+        </div>
+        <div class="nav-item" onclick="showPage('account', this)">
+          <span class="nav-icon">&#9881;</span> Account
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar" id="sidebarAvatar">DU</div>
+          <div>
+            <div style="font-size:12px;font-weight:600;" id="sidebarName">Gast</div>
+            <div style="font-size:10px;color:var(--gold);" id="sidebarLevel">Level 1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="main">
+      <div class="page active" id="page-dashboard">
+        <div class="dash-header">
+          <div>
+            <div class="dash-title">Dein Dorf</div>
+            <div class="dash-subtitle" id="dashGreet">Willkommen zurück, Lernkrieger!</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px;color:var(--text-secondary);">Mitglieder</div>
+            <div style="font-size:18px;font-weight:700;color:var(--gold);" id="todayTime">0</div>
+          </div>
+        </div>
+        <div class="level-section">
+          <div class="level-header">
+            <div class="level-name">Dein Community-Level</div>
+            <div class="level-badge" id="levelBadge">LV 1</div>
+          </div>
+          <div class="level-detail" id="levelDetail">Sammle Punkte durch Aktivität.</div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill" style="width: 30%;"></div></div>
+          <div class="progress-pct" id="progressPct">30 %</div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value" id="totalUsers">0</div>
+            <div class="stat-label">User gesamt</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="activeUsers">0</div>
+            <div class="stat-label">Aktive User</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="userRank">1</div>
+            <div class="stat-label">Dein Rang</div>
+          </div>
+        </div>
+        <button class="dash-btn" onclick="showPage('users', this)">Community anschauen</button>
+      </div>
+
+      <div class="page" id="page-users">
+        <div class="page-title">Community</div>
+        <div class="level-section" style="margin-bottom: 20px;">
+          <div class="level-header">
+            <div class="level-name">Mitgliederliste</div>
+            <button class="dash-btn" onclick="loadUsers()" style="padding: 10px 14px; font-size:13px;">Aktualisieren</button>
+          </div>
+          <div class="level-detail">Alle registrierten Nutzer aus der Datenbank.</div>
+        </div>
+        <div class="table-wrapper" id="userTable"></div>
+      </div>
+
+      <div class="page" id="page-account">
+        <div class="page-title">Account</div>
+        <div class="field-list">
+          <div>
+            <div class="label-quiet">Name</div>
+            <div class="value-strong" id="accountName">-</div>
+          </div>
+          <div>
+            <div class="label-quiet">E-Mail</div>
+            <div class="value-strong" id="accountEmail">-</div>
+          </div>
+          <div>
+            <div class="label-quiet">Token</div>
+            <div class="value-strong" id="accountToken">-</div>
+          </div>
+        </div>
+        <div style="margin-top: 28px; max-width: 360px;">
+          <button class="dash-btn" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "island-study-backend",
+  "version": "1.0.0",
+  "description": "Study Village - Learn together, grow together.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development nodemon index.js",
+    "migrate": "node scripts/init-db.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^8.4.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.4",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
